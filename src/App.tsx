@@ -3,33 +3,38 @@ import Results from './components/Results';
 import UserTypings from './components/UserTypings';
 import React from 'react';
 import useEngine from './hooks/useEngine';
+import DarkModeToggle from './components/DarkModetoggle';
+import { calculateAccuracy } from './utils/helper';
 
 const GenerateWords = ({ words }: { words: string }) => {
-  return <div>{words}</div>;
+  return <div className="dark:text-slate-500 text-black">{words}</div>;
 };
 
 function App() {
-  const { state } = useEngine();
+  const { state, words, restart, typed, timeLeft, errors, total } = useEngine();
 
   return (
     <>
-      <CountdownTimer timeLeft={20} />
+      <DarkModeToggle />
+      <CountdownTimer timeLeft={timeLeft} />
       <WordsContainer>
         <GenerateWords words={words} />
         <UserTypings
-          userInput={'Hello world'}
+          userInput={typed}
           className="absolute inset-0"
-        />'{' '}
+          words={words}
+        />
       </WordsContainer>
       <RestartButton
         className={'mx-auto mt-10 text-slate-500'}
-        onRestart={() => null}
+        onRestart={restart}
       />
       <Results
-        errors={10}
-        accuracyPercentage={65}
-        total={200}
+        errors={errors}
+        accuracyPercentage={calculateAccuracy(total, errors)}
+        total={total}
         className="mt-10"
+        state={state}
       />
     </>
   );
@@ -45,7 +50,9 @@ const WordsContainer = ({ children }: { children: React.ReactNode }) => {
 
 const CountdownTimer = ({ timeLeft }: { timeLeft: number }) => {
   return (
-    <h2 className="text-primary-400 font-medium mb-3">Time: {timeLeft}</h2>
+    <h2 className="dark:text-primary-400 text-green-500 font-medium mb-3">
+      Time: {timeLeft}
+    </h2>
   );
 };
 
